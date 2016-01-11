@@ -1,9 +1,10 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "path/filepath"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -17,20 +18,25 @@ func main() {
 
 }
 
-func rename(strings...string) {
+func rename(params ...string) {
 	ext := "*"
 
-	if len(strings) > 1 {
-		ext = strings[1]
+	if len(params) > 1 {
+		ext = params[1]
 	}
-	pattern := strings[0] + "/*." + ext
+	pattern := params[0] + "/*." + ext
 
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		panic(err)
 	}
 
-	for _, file := range files {
-		fmt.Println(file)
+	for i, file := range files {
+		names := strings.Split(file, ".")
+		renamed := fmt.Sprint(i) + "." + names[1]
+
+		if err := os.Rename(file, renamed); err != nil {
+			fmt.Printf("renamed %v -> %v \n", file, renamed)
+		}
 	}
 }
